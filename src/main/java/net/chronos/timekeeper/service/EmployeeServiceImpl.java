@@ -31,7 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     public List<EmployeeDTO> getEmployeesByLastName(String lastName) {
-        List<Employee> employees = employeeRepository.findByLastNameIgnoreCase(lastName);
+        List<Employee> employees = employeeRepository.findByLastNameStartingWithIgnoreCase(lastName);
         return employees.stream()
                 .map(e -> new EmployeeDTO(e))
                 .collect(Collectors.toList());

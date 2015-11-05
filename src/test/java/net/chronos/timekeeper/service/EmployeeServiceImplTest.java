@@ -78,7 +78,7 @@ public class EmployeeServiceImplTest {
     @Test
     public void shouldSearchRepositoryForEmployeesByLastName(){
         List<Employee> expectedEmployees = Arrays.asList(employee);
-        when(employeeRepository.findByLastNameIgnoreCase("foo")).thenReturn(expectedEmployees);
+        when(employeeRepository.findByLastNameStartingWithIgnoreCase("foo")).thenReturn(expectedEmployees);
 
         List<EmployeeDTO> actualEmployeeList = sut.getEmployeesByLastName("foo");
 

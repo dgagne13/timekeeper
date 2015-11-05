@@ -16,10 +16,10 @@ public class Position {
     @Column
     private String description;
 
-    @Column(name = "max_hourly")
+    @Column(name = "max_hourly_rate")
     private BigDecimal maximumHourlyRate;
 
-    @Column(name = "min_hourly")
+    @Column(name = "min_hourly_rate")
     private BigDecimal minimumHourlyRate;
 
     public Long getId() {
