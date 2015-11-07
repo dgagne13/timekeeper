@@ -11,7 +11,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import javax.sql.DataSource;
 
 @SpringBootApplication
-@EnableWebMvc
 public class TimeKeeperApplication {
     public static void main(String...args) {
         SpringApplication.run(TimeKeeperApplication.class, args);
@@ -22,5 +21,6 @@ public class TimeKeeperApplication {
     public DataSource getDataSource() {
         return DataSourceBuilder.create().build();
     }
+
 
 }

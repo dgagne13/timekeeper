@@ -1,18 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
+        <title>Track your employees' time</title>
+        <meta charset="UTF-8" />
+        <!--[if lt IE 9]>
+        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        <link rel="stylesheet" href="/css/employees.css" th:href="@{/css/employees.css}"/>
+        <script async src="https://code.jquery.com/jquery-1.11.3.min.js"/>
+        <script async src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"/>
+        <script src="/js/shift.js" th:ref="@{/js/employee.js}"/>
+        <script src="/js/employee.js" th:ref="@{/js/shift.js}"/>
+        <script>
+
+        </script>
     </head>
     <body>
-        <div id="employee-search-bar">
-        </div>
-        <div id="employee-list">
-           <p th:text="${poop}">poop</p>
-        </div>
+        <main>
+            <section id="employees">
+                <header >
+                    <h2>Employees</h2>
+                    <form id="emp-find">
+                        <h3>Find an employee</h3>
+                        <label for="emp-find-name"><span>Last Name</span><input type="text" name="emp-find-name" id="emp-find-name" /></label>
+                        <label for="emp-find-department"><span>Department</span>
+                            <select name="emp-find-department" id="emp-find-department">
+                                <option value="" selected="selected">All</option>
+                                <option th:each="department : ${departments}" value="${department.name}" th:text="${department.name}">----</option>
+                            </select>
+                        </label>
+                        <input name="emp-find-submit" type="submit" />
+                    </form>
+                </header>
+                <div id=employees-table"></div>
+            </section>
 
-        <div id="shift-entry-form">
-            <form>
-                <label for="startTime"
-            </form>
-        </div>
+
+        </main>
+        <footer>
+            <p>Timekeeper by dgagne: <time></time></p>
+        </footer>
     </body>
 </html>

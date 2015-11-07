@@ -47,14 +47,6 @@ public class ShiftsController {
 
     }
 
-    @RequestMapping(value = "/{shift-id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateShift(@PathVariable(value = "shift-id") Long shiftId, @RequestBody ShiftDTO shiftDTO) {
-        log.info("Updating shift " + shiftId);
-        shiftService.updateShift(shiftId, shiftDTO);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-
-    }
-
     @RequestMapping(value = "/{shift-id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteShift(@PathVariable(value = "shift-id") Long shiftId) {
         log.info("Deleting shift " + shiftId);

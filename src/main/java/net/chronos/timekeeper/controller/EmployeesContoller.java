@@ -28,13 +28,7 @@ public class EmployeesContoller {
     public List<EmployeeDTO> getEmployees(@RequestParam(value = "last", required = false) String lastName,
                                           @RequestParam(value = "department", required = false) String department) {
         log.info("Find employees with params " + lastName + ", " + department);
-        if(lastName != null) {
-            return employeeService.getEmployeesByLastName(lastName);
-        } else if (department != null) {
-            return employeeService.getEmployeesByDepartment(department);
-        } else {
-            return employeeService.getEmployees();
-        }
+        return employeeService.getEmployees(department, lastName);
     }
 
     @ExceptionHandler({NotFoundException.class})

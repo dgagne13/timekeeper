@@ -11,11 +11,7 @@ import java.util.List;
 public interface EmployeeService {
     EmployeeDTO getEmployee(Long id) throws NotFoundException;
 
-    List<EmployeeDTO> getEmployeesByLastName(String lastName);
-
-    List<EmployeeDTO> getEmployeesByDepartment(String departmentName);
-
-    List<EmployeeDTO> getEmployees();
+    List<EmployeeDTO> getEmployees(String departmentName, String lastName);
 
     void updateEmployeeVacation(Long employeeId, BigDecimal vacation) throws NotFoundException;
 

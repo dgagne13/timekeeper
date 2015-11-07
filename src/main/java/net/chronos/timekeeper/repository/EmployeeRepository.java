@@ -8,4 +8,5 @@ import java.util.List;
 public interface EmployeeRepository extends CrudRepository<Employee, Long> {
     List<Employee> findByLastNameStartingWithIgnoreCase(String lastName);
     List<Employee> findByDepartmentName(String departmentName);
+    List<Employee> findByDepartmentNameAndLastNameStartingWithIgnoreCase(String departmentName, String lastName);
 }

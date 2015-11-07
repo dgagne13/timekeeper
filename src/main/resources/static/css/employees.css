@@ -1,0 +1,49 @@
+/* css reset */
+body, section, header, nav, h1, h2, h3, table {
+    margin: 0;
+    padding 0;
+    font-size:100%;
+}
+table {
+    border-collape: true;
+    border-spacing: 0;
+}
+
+/*
+color wheel
+blue-gray: #98A798
+dark gray: #263029
+silver: #BEC0BF
+forest: #307454
+dark forest: #0D3221
+rust: #864D1D
+*/
+.color-primary-0 { color: #277552 }	/* Main Primary color */
+.color-primary-1 { color: #75B095 }
+.color-primary-2 { color: #499371 }
+.color-primary-3 { color: #0F5837 }
+.color-primary-4 { color: #003B20 }
+.color-primary-5 { color: #D3D8D6 }
+
+.color-complement-0 { color: #AA5739 }	/* Main Complement color */
+.color-complement-1 { color: #FFC1AA }
+.color-complement-2 { color: #D4876A }
+.color-complement-3 { color: #803215 }
+.color-complement-4 { color: #551700 }
+
+body {
+    background: rgba(211, 216, 214, 0.38); /*#FEFCB3;*/
+    color:#003B20;
+}
+
+#employees header {
+    backgound: #0F5837;
+}
+
+footer {
+    backgound: #061F14;
+    color: #EEF0EF;
+}
+.button {
+    backgound: #75B095;
+}

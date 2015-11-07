@@ -69,10 +69,21 @@ public class EmployeeServiceImplTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void shouldThrowExceptionIfEmolyeeNotFound() throws Exception{
+    public void shouldThrowExceptionIfEmployeeNotFound() throws Exception{
         when(employeeRepository.findOne(1L)).thenReturn(null);
 
         sut.getEmployee(1L);
+    }
+
+    @Test
+    public void shouldSearchRepositoryForEmployeesByLastNameAndDepartment(){
+        List<Employee> expectedEmployees = Arrays.asList(employee);
+        when(employeeRepository.findByDepartmentNameAndLastNameStartingWithIgnoreCase("Shoes", "foo")).thenReturn(expectedEmployees);
+
+        List<EmployeeDTO> actualEmployeeList = sut.getEmployees("Shoes", "foo");
+
+        assertTrue(actualEmployeeList.size() == 1);
+        verifyDTOHasExpectedValues(actualEmployeeList.get(0));
     }
 
     @Test
@@ -80,7 +91,7 @@ public class EmployeeServiceImplTest {
         List<Employee> expectedEmployees = Arrays.asList(employee);
         when(employeeRepository.findByLastNameStartingWithIgnoreCase("foo")).thenReturn(expectedEmployees);
 
-        List<EmployeeDTO> actualEmployeeList = sut.getEmployeesByLastName("foo");
+        List<EmployeeDTO> actualEmployeeList = sut.getEmployees(null, "foo");
 
         assertTrue(actualEmployeeList.size() == 1);
         verifyDTOHasExpectedValues(actualEmployeeList.get(0));
@@ -91,7 +102,7 @@ public class EmployeeServiceImplTest {
         List<Employee> expectedEmployees = Arrays.asList(employee);
         when(employeeRepository.findByDepartmentName("Shoes")).thenReturn(expectedEmployees);
 
-        List<EmployeeDTO> actualEmployeeList = sut.getEmployeesByDepartment("Shoes");
+        List<EmployeeDTO> actualEmployeeList = sut.getEmployees("Shoes", null);
 
         assertTrue(actualEmployeeList.size() == 1);
         verifyDTOHasExpectedValues(actualEmployeeList.get(0));
@@ -117,7 +128,7 @@ public class EmployeeServiceImplTest {
         List<Employee> expectedEmployees = Arrays.asList(employee, employee2);
         when(employeeRepository.findAll()).thenReturn(expectedEmployees);
 
-        List<EmployeeDTO> actualEmployeeList = sut.getEmployees();
+        List<EmployeeDTO> actualEmployeeList = sut.getEmployees(null,null);
 
         assertTrue(actualEmployeeList.size() == 2);
 

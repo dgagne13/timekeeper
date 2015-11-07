@@ -30,25 +30,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new EmployeeDTO(employee);
     }
 
-    public List<EmployeeDTO> getEmployeesByLastName(String lastName) {
-        List<Employee> employees = employeeRepository.findByLastNameStartingWithIgnoreCase(lastName);
+    public List<EmployeeDTO> getEmployees(String departmentName, String lastName) {
+        List<Employee> employees;
+        if(departmentName != null && lastName != null) {
+            employees = employeeRepository.findByDepartmentNameAndLastNameStartingWithIgnoreCase(departmentName, lastName);
+        } else if(departmentName != null) {
+            employees = employeeRepository.findByDepartmentName(departmentName);
+        } else if(lastName != null) {
+            employees = employeeRepository.findByLastNameStartingWithIgnoreCase(lastName);
+        } else {
+            Iterable<Employee> employeeIterable = employeeRepository.findAll();
+            employees = StreamSupport.stream(employeeIterable.spliterator(),false)
+                    .collect(Collectors.toList());
+        }
+
         return employees.stream()
                 .map(e -> new EmployeeDTO(e))
-                .collect(Collectors.toList());
-    }
-
-    public List<EmployeeDTO> getEmployeesByDepartment(String departmentName) {
-        List<Employee> employees = employeeRepository.findByDepartmentName(departmentName);
-        return employees.stream()
-                .map(e -> new EmployeeDTO(e))
-                .collect(Collectors.toList());
-    }
-
-    public List<EmployeeDTO> getEmployees() {
-        Iterable<Employee> allEmployees = employeeRepository.findAll();
-        return StreamSupport.stream(allEmployees.spliterator(),false)
-                .map(e -> new EmployeeDTO(e))
-                .sorted((e1, e2) -> e1.getLastName().compareTo(e2.getLastName()))
                 .collect(Collectors.toList());
     }
 

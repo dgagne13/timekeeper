@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 public interface ShiftService {
     Long createShift(ShiftDTO shiftDTO) throws ShiftCreationException;
 
-    void updateShift(Long shiftId, ShiftDTO shiftDTO) throws NotFoundException, ShiftCreationException;
-
     ShiftDTO getShift(Long shiftId) throws NotFoundException;
 
     void deleteShift(Long shiftId) throws NotFoundException;

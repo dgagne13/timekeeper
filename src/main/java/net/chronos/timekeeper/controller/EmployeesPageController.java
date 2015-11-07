@@ -16,7 +16,7 @@ public class EmployeesPageController {
 
     @RequestMapping("/")
     public String getEmployeesPage(Model model) {
-        model.addAttribute("poop", "pee");
+        model.addAttribute("departments", departmentService.getDepartments());
         return "employees";
     }
 }

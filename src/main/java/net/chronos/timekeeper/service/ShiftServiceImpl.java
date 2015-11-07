@@ -70,24 +70,6 @@ public class ShiftServiceImpl implements ShiftService {
 
     }
 
-    public void updateShift(Long shiftId, ShiftDTO shiftDTO) throws NotFoundException, ShiftCreationException {
-        Shift shift = getShiftById(shiftId);
-        Long employeeId = shift.getEmployeeId();
-
-        //can't modify shift to a different employee
-        if (!shiftDTO.getEmployeeId().equals(employeeId)) {
-            log.info(MISMATCHED_EMPLOYEE);
-            throw new ShiftCreationException(MISMATCHED_EMPLOYEE);
-        }
-        EmployeeDTO employee = employeeService.getEmployee(employeeId);
-        validateShiftRequest(shiftDTO, employee);
-
-        copyShiftDTOToShift(shift, shiftDTO);
-        shiftRepository.save(shift);
-
-        adjustEmployeeHours(shiftDTO, employee);
-    }
-
     public ShiftDTO getShift(Long shiftId) throws NotFoundException {
         Shift shift = getShiftById(shiftId);
         return new ShiftDTO(shift);
@@ -95,7 +77,20 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     public void deleteShift(Long shiftId) throws NotFoundException {
-       Shift shift = getShiftById(shiftId);
+        Shift shift = getShiftById(shiftId);
+        EmployeeDTO employee = employeeService.getEmployee(shift.getEmployeeId());
+        switch (shift.getShiftType()) {
+           case Vacation:
+               //put back vacation time
+               BigDecimal adjustedVacation = employee.getVacationHours().add(shift.getDuration());
+               employeeService.updateEmployeeVacation(employee.getId(), adjustedVacation);
+               break;
+            case Sick:
+                //put back vacation time
+                BigDecimal adjustedSick = employee.getSickHours().add(shift.getDuration());
+                employeeService.updateEmployeeSick(employee.getId(), adjustedSick);
+                break;
+        }
        shiftRepository.delete(shift);
     }
 
@@ -137,6 +132,7 @@ public class ShiftServiceImpl implements ShiftService {
                 break;
             case Sick:
                 validateHasNoLunch(shiftDTO);
+                validateHasEnoughSickTime(shiftDuration, employee);
                 break;
             default:
                 validateHasNoLunch(shiftDTO);
