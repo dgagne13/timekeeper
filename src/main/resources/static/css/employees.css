@@ -31,32 +31,39 @@ rust: #864D1D
 .color-complement-2 { color: #D4876A }
 .color-complement-3 { color: #803215 }
 .color-complement-4 { color: #551700 }
-
+*/
 body {
     font-family: Arial, Helvetica, sans-serif;
-    backgound: #FFFFF;
+    background: #C9F4E1;
 }
-header {
-    backgound: #061F14;
+h1 {
+    font-size: 5em;
+}
+h2 {
+    margin-left: 1em;
+    font-size: 3em;
+}
+.logo {
+    background: white;
+    border: 1px solid #061F14;
+    margin-right: 1em;
+}
+.emp-main-component {
+    margin-top: 3em;
+    border-radius: 25px;
+}
+.dark-bg {
+    background: #061F14;
     color: #E1F3F7;
-    border-bottom: solid 1px #B8CACF;
 }
-main {
-    background:  #E1F3F7;
-    color:#003B20;
-}
-footer {
-    backgound: #061F14;
+.green-bg {
+    background: #17744B;
     color: #E1F3F7;
 }
-
-#employees header {
-    backgound: #0F5837;
+.light-green-bg {
+    background: #C9F4E1;
+    color: black;
 }
-.button {
-    backgound: #75B095;
-    color: #FFFFF;
-    text-align: center;
-    padding 5px;
+.dark-border {
+    border: solid 0.3em #061F14;
 }
-*/

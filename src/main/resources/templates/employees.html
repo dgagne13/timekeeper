@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
     <head>
         <title>Track your employees' time</title>
-        <meta charset="UTF-8" />
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <!--[if lt IE 9]>
         <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
@@ -11,58 +12,63 @@
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
     </head>
     <body>
-        <main ng-app="employees-app" ng-controller="employees-ctrl">
-            <section id="employees" ng-show="showEmployees">
-                <header >
+        <main ng-app="employees-app" ng-controller="employees-ctrl" ng-init="@{/}">
+            <header class="dark-bg">
+                <h1><img src="/images/clock-26095_640.png" width="120px" class="logo"/>Timekeeper</h1>
+            </header>
+            <section class="container emp-main-component" id="employees" ng-show="showEmployees">
+                <header class="green-bg">
                     <h2>Employees</h2>
                     <form id="emp-find" class="form-horizontal">
-                        <h3>Find an employee</h3>
-                        <div class="form-group">
-                            <label class="control-label">Last Name</label>
-                            <input type="text" ng-model="empSearchLast"/>
+                        <div class="row">
+                            <div class="form-group col-sm-4">
+                                <label class="control-label">Last Name</label>
+                                <input type="text" ng-model="empSearchLast"/>
+                            </div>
+                            <div class="form-group col-sm-7">
+                                <label class="control-label">Department</label>
+                                <select ng-model="empSearchDept">
+                                    <option value="" selected="selected">All</option>
+                                    <option th:each="department : ${departments}" th:value="${department.name}" th:text="${department.name}">----</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-default" ng-click="searchEmployees()"><span class="glyphicon glyphicon-search"></span>Search</button>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label">Department</label>
-                            <select ng-model="empSearchDept">
-                                <option value="" selected="selected">All</option>
-                                <option th:each="department : ${departments}" th:value="${department.name}" th:text="${department.name}">----</option>
-                            </select>
-                        </div>
-                        <button class="btn btn-success" ng-click="searchEmployees()"><span class="glyphicon glyphicon-search"></span>Search</button>
                     </form>
                 </header>
-                <div id="employees-table">
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Last Name</th>
-                            <th>First Name</th>
-                            <th>Title</th>
-                            <th>Department</th>
-                            <th>Vacation</th>
-                            <th>Sick</th>
-                            <th>History</th>
-                            <th>Hourly Wage</th>
-                            <th>Status</th>
-                            <th>Hired</th>
-                        </tr>
-                        <tr ng-repeat="e in employees | orderBy: 'lastName'">
-                            <td>{{e.lastName}}</td>
-                            <td>{{e.firstName}}</td>
-                            <td>{{e.position}}</td>
-                            <td>{{e.department}}</td>
-                            <td>{{e.vacationHours}}</td>
-                            <td>{{e.sickHours}}</td>
-                            <td><button class="btn" ng-click="shiftsForEmployee(e.id, e.firstName + ' ' + e.lastName)">History</button></td>
-                            <td>{{e.hourlyRate | currency}}</td>
-                            <td>{{e.employmentStatus}}</td>
-                            <td>{{e.hireDate | date : 'shortDate' }}</td>
-                        </tr>
-                    </table>
-                </div>
+                <table class="table dark-border">
+                    <tr class="green-bg">
+                        <th>Last Name</th>
+                        <th>First Name</th>
+                        <th>Title</th>
+                        <th>Department</th>
+                        <th>Vacation</th>
+                        <th>Sick</th>
+                        <th>History</th>
+                        <th>Hourly Wage</th>
+                        <th>Status</th>
+                        <th>Hired</th>
+                    </tr>
+                    <tr ng-repeat="e in employees | orderBy: 'lastName'" class="light-green-bg">
+                        <td>{{e.lastName}}</td>
+                        <td>{{e.firstName}}</td>
+                        <td>{{e.position}}</td>
+                        <td>{{e.department}}</td>
+                        <td>{{e.vacationHours}}</td>
+                        <td>{{e.sickHours}}</td>
+                        <td><button class="btn" ng-click="shiftsForEmployee(e.id, e.firstName + ' ' + e.lastName)">History</button></td>
+                        <td>{{e.hourlyRate | currency}}</td>
+                        <td>{{e.employmentStatus}}</td>
+                        <td>{{e.hireDate | date : 'shortDate' }}</td>
+                    </tr>
+                </table>
             </section>
-            <section>
+            <section class="container emp-main-component">
                 <div id="employee-shifts" ng-show="showShifts">
-                    <div>Shifts for employee {{shiftEmployee}}<span class="close" ng-click="closeShifts()"></span></div>
+                    <header class="green-bg">
+                        <h2>Shifts for employee {{shiftEmployee}}</h2>
+                        <div><button class="close pull-right" ng-click="closeShifts()"></button></div>
+                    </header>
                     <table class="table table-striped">
                         <tr>
                             <th>Date</th>
@@ -85,6 +91,39 @@
             </section>
             <dialog ng-show="showCreate">
                 <form class="form-horizontal">
+                    <div class="error" ng-show="hasCreationError">{{creationErrorMessage}}</div>
+                    <div class="form-group">
+                        <label class="control-label">Date</label>
+                        <input type="text" ng-model="newShift.date"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Type</label>
+                        <select>
+                            <option ng-repeat="st in shiftTypes" value="{{st}}">{{st}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Start</label>
+                        <select>
+                            <option ng-repeat="t in times(9)" value="{{t}}">{{t | date : 'hh:mma' }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">End</label>
+                        <select>
+                            <option ng-repeat="t in times(17)" value="{{t}}">{{t | date : 'hh:mma' }}</option>
+                        </select>
+                    </div>
+                    <div ng-show="newShift.type == 'Regular'">
+                        <div class="form-group">
+                            <label class="control-label">Lunch Start</label>
+                            <input type="text" ng-model="newShift.start"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Lunch End</label>
+                            <input type="text" ng-model="newShift.start"/>
+                        </div>
+                    </div>
 
                 </form>
             </dialog>
