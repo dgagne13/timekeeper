@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface ShiftRepository extends CrudRepository<Shift,Long> {
     List<Shift> findByEmployeeIdAndStartTimeBeforeAndEndTimeAfter(Long employeeId, Date startTime, Date endTime);
-    Page<Shift> findByEmployeeId(Long employeeId, Pageable pageable);
+    List<Shift> findByEmployeeId(Long employeeId);
 }

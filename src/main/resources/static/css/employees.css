@@ -17,8 +17,8 @@ silver: #BEC0BF
 forest: #307454
 dark forest: #0D3221
 rust: #864D1D
-*/
 .color-primary-0 { color: #277552 }	/* Main Primary color */
+/*
 .color-primary-1 { color: #75B095 }
 .color-primary-2 { color: #499371 }
 .color-primary-3 { color: #0F5837 }
@@ -26,24 +26,37 @@ rust: #864D1D
 .color-primary-5 { color: #D3D8D6 }
 
 .color-complement-0 { color: #AA5739 }	/* Main Complement color */
+/*
 .color-complement-1 { color: #FFC1AA }
 .color-complement-2 { color: #D4876A }
 .color-complement-3 { color: #803215 }
 .color-complement-4 { color: #551700 }
 
 body {
-    background: rgba(211, 216, 214, 0.38); /*#FEFCB3;*/
+    font-family: Arial, Helvetica, sans-serif;
+    backgound: #FFFFF;
+}
+header {
+    backgound: #061F14;
+    color: #E1F3F7;
+    border-bottom: solid 1px #B8CACF;
+}
+main {
+    background:  #E1F3F7;
     color:#003B20;
+}
+footer {
+    backgound: #061F14;
+    color: #E1F3F7;
 }
 
 #employees header {
     backgound: #0F5837;
 }
-
-footer {
-    backgound: #061F14;
-    color: #EEF0EF;
-}
 .button {
     backgound: #75B095;
+    color: #FFFFF;
+    text-align: center;
+    padding 5px;
 }
+*/

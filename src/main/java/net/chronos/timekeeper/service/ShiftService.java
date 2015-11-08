@@ -7,6 +7,8 @@ import net.chronos.timekeeper.exception.ShiftCreationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface ShiftService {
     Long createShift(ShiftDTO shiftDTO) throws ShiftCreationException;
 
@@ -14,5 +16,5 @@ public interface ShiftService {
 
     void deleteShift(Long shiftId) throws NotFoundException;
 
-    Page<ShiftDTO> getShiftsForEmployee(Long employeeId, Pageable pageable) throws NotFoundException;
+    List<ShiftDTO> getShiftsForEmployee(Long employeeId) throws NotFoundException;
 }

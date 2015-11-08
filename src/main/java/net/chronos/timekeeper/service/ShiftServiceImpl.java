@@ -94,19 +94,18 @@ public class ShiftServiceImpl implements ShiftService {
        shiftRepository.delete(shift);
     }
 
-    public Page<ShiftDTO> getShiftsForEmployee(Long employeeId, Pageable pageable) throws NotFoundException {
+    public List<ShiftDTO> getShiftsForEmployee(Long employeeId) throws NotFoundException {
         //throw notfound if no employee has id
         EmployeeDTO employee = employeeService.getEmployee(employeeId);
 
-        Page<Shift> shiftsForEmployee = shiftRepository.findByEmployeeId(employeeId, pageable);
+        List<Shift> shiftsForEmployee = shiftRepository.findByEmployeeId(employeeId);
 
         List<ShiftDTO> shiftDTOs =
-                shiftsForEmployee.getContent().stream()
+                shiftsForEmployee.stream()
                 .map(s -> new ShiftDTO(s))
                 .collect(Collectors.toList());
 
-        Page<ShiftDTO> shiftDTOPage = new PageImpl<ShiftDTO>(shiftDTOs, pageable, shiftsForEmployee.getTotalElements());
-        return shiftDTOPage;
+        return shiftDTOs;
     }
 
     private void validateShiftRequest(ShiftDTO shiftDTO, EmployeeDTO employee) throws ShiftCreationException {

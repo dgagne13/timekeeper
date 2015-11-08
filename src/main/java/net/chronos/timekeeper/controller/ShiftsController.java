@@ -19,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -31,9 +32,9 @@ public class ShiftsController {
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Page<ShiftDTO> getEmployeeShifts(@RequestParam(value = "employee-id", required = true) Long employeeId, Pageable pageable) {
-        log.info("Get shifts for employee " + employeeId + " page " + pageable.getPageNumber());
-        return shiftService.getShiftsForEmployee(employeeId, pageable);
+    public List<ShiftDTO> getEmployeeShifts(@RequestParam(value = "employee-id", required = true) Long employeeId) {
+        log.info("Get shifts for employee " + employeeId);
+        return shiftService.getShiftsForEmployee(employeeId);
     }
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)

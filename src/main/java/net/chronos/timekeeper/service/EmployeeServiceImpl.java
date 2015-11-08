@@ -41,6 +41,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         } else {
             Iterable<Employee> employeeIterable = employeeRepository.findAll();
             employees = StreamSupport.stream(employeeIterable.spliterator(),false)
+                    .sorted((e1,e2) -> e1.getLastName().compareTo(e2.getLastName()))
                     .collect(Collectors.toList());
         }
 

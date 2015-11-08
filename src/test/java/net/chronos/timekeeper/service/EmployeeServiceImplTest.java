@@ -125,7 +125,7 @@ public class EmployeeServiceImplTest {
         employee2.setDepartment(department);
         employee2.setEmploymentStatus(status);
 
-        List<Employee> expectedEmployees = Arrays.asList(employee, employee2);
+        Iterable<Employee> expectedEmployees = Arrays.asList(employee, employee2);
         when(employeeRepository.findAll()).thenReturn(expectedEmployees);
 
         List<EmployeeDTO> actualEmployeeList = sut.getEmployees(null,null);

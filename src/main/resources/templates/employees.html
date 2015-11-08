@@ -6,39 +6,92 @@
         <!--[if lt IE 9]>
         <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="/css/employees.css" th:href="@{/css/employees.css}"/>
-        <script async src="https://code.jquery.com/jquery-1.11.3.min.js"/>
-        <script async src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"/>
-        <script src="/js/shift.js" th:ref="@{/js/employee.js}"/>
-        <script src="/js/employee.js" th:ref="@{/js/shift.js}"/>
-        <script>
-
-        </script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
     </head>
     <body>
-        <main>
-            <section id="employees">
+        <main ng-app="employees-app" ng-controller="employees-ctrl">
+            <section id="employees" ng-show="showEmployees">
                 <header >
                     <h2>Employees</h2>
-                    <form id="emp-find">
+                    <form id="emp-find" class="form-horizontal">
                         <h3>Find an employee</h3>
-                        <label for="emp-find-name"><span>Last Name</span><input type="text" name="emp-find-name" id="emp-find-name" /></label>
-                        <label for="emp-find-department"><span>Department</span>
-                            <select name="emp-find-department" id="emp-find-department">
+                        <div class="form-group">
+                            <label class="control-label">Last Name</label>
+                            <input type="text" ng-model="empSearchLast"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Department</label>
+                            <select ng-model="empSearchDept">
                                 <option value="" selected="selected">All</option>
-                                <option th:each="department : ${departments}" value="${department.name}" th:text="${department.name}">----</option>
+                                <option th:each="department : ${departments}" th:value="${department.name}" th:text="${department.name}">----</option>
                             </select>
-                        </label>
-                        <input name="emp-find-submit" type="submit" />
+                        </div>
+                        <button class="btn btn-success" ng-click="searchEmployees()"><span class="glyphicon glyphicon-search"></span>Search</button>
                     </form>
                 </header>
-                <div id=employees-table"></div>
+                <div id="employees-table">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Last Name</th>
+                            <th>First Name</th>
+                            <th>Title</th>
+                            <th>Department</th>
+                            <th>Vacation</th>
+                            <th>Sick</th>
+                            <th>History</th>
+                            <th>Hourly Wage</th>
+                            <th>Status</th>
+                            <th>Hired</th>
+                        </tr>
+                        <tr ng-repeat="e in employees | orderBy: 'lastName'">
+                            <td>{{e.lastName}}</td>
+                            <td>{{e.firstName}}</td>
+                            <td>{{e.position}}</td>
+                            <td>{{e.department}}</td>
+                            <td>{{e.vacationHours}}</td>
+                            <td>{{e.sickHours}}</td>
+                            <td><button class="btn" ng-click="shiftsForEmployee(e.id, e.firstName + ' ' + e.lastName)">History</button></td>
+                            <td>{{e.hourlyRate | currency}}</td>
+                            <td>{{e.employmentStatus}}</td>
+                            <td>{{e.hireDate | date : 'shortDate' }}</td>
+                        </tr>
+                    </table>
+                </div>
             </section>
+            <section>
+                <div id="employee-shifts" ng-show="showShifts">
+                    <div>Shifts for employee {{shiftEmployee}}<span class="close" ng-click="closeShifts()"></span></div>
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Lunch Start</th>
+                            <th>Lunch End</th>
+                        </tr>
+                        <tr ng-repeat="s in shifts | orderBy: 'startTime'">
+                            <td>{{s.startTime | date : 'shortDate'}}</td>
+                            <td>{{s.shiftType}}</td>
+                            <td>{{s.startTime | date : 'hh:mma'}}</td>
+                            <td>{{s.endTime | date : 'hh:mma'}}</td>
+                            <td ng-placeHolder="--">{{s.lunchStartTime | date : 'hh:mma'}}</td>
+                            <td ng-placeHolder="--">{{s.lunchEndTime | date : 'hh:mma'}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+            <dialog ng-show="showCreate">
+                <form class="form-horizontal">
 
-
+                </form>
+            </dialog>
         </main>
         <footer>
             <p>Timekeeper by dgagne: <time></time></p>
         </footer>
+        <script src="/js/employee.js" th:ref="@{/js/shift.js}"></script>
     </body>
 </html>
