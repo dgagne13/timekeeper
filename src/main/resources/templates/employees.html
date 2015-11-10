@@ -9,17 +9,19 @@
         <![endif]-->
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="/css/employees.css" th:href="@{/css/employees.css}"/>
+        <!-- for angular and some handy ui components on top of angular and bootstrap -->
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.min.js"></script>
     </head>
     <body>
         <main ng-app="employees-app" ng-controller="employees-ctrl" ng-init="@{/}">
-            <header class="dark-bg">
+            <header class="top-banner">
                 <h1><img src="/images/clock-26095_640.png" width="120px" class="logo"/>Timekeeper</h1>
             </header>
-            <section class="container emp-main-component" id="employees" ng-show="showEmployees">
-                <header class="green-bg">
+            <section class="container pull-left emp-main-component" id="employees" ng-show="showEmployees">
+                <header class="section-top">
                     <h2>Employees</h2>
-                    <form id="emp-find" class="form-horizontal">
+                    <form class="form-horizontal" id="searchForm">
                         <div class="row">
                             <div class="form-group col-sm-4">
                                 <label class="control-label">Last Name</label>
@@ -32,12 +34,13 @@
                                     <option th:each="department : ${departments}" th:value="${department.name}" th:text="${department.name}">----</option>
                                 </select>
                             </div>
-                            <button class="btn btn-default" ng-click="searchEmployees()"><span class="glyphicon glyphicon-search"></span>Search</button>
+                            <button class="btn btn-default" ng-click="searchEmployees()"><span class="glyphicon glyphicon-search"></span>&nbsp;Search</button>
                         </div>
                     </form>
                 </header>
-                <table class="table dark-border">
-                    <tr class="green-bg">
+                <table class="table">
+                    <tr>
+                        <th></th>
                         <th>Last Name</th>
                         <th>First Name</th>
                         <th>Title</th>
@@ -49,87 +52,90 @@
                         <th>Status</th>
                         <th>Hired</th>
                     </tr>
-                    <tr ng-repeat="e in employees | orderBy: 'lastName'" class="light-green-bg">
+                    <tr ng-repeat="e in employees | orderBy: 'lastName'">
+                        <td><button class="btn btn-default" ng-show="e.employmentStatus == 'Active'" ng-click="createShift(e.id)"><span class="glyphicon glyphicon-time"></span></button></td>
                         <td>{{e.lastName}}</td>
                         <td>{{e.firstName}}</td>
                         <td>{{e.position}}</td>
                         <td>{{e.department}}</td>
                         <td>{{e.vacationHours}}</td>
                         <td>{{e.sickHours}}</td>
-                        <td><button class="btn" ng-click="shiftsForEmployee(e.id, e.firstName + ' ' + e.lastName)">History</button></td>
+                        <td><button class="btn btn-default" ng-click="shiftsForEmployee(e.id, e.firstName + ' ' + e.lastName)">History</button></td>
                         <td>{{e.hourlyRate | currency}}</td>
                         <td>{{e.employmentStatus}}</td>
                         <td>{{e.hireDate | date : 'shortDate' }}</td>
                     </tr>
                 </table>
             </section>
-            <section class="container emp-main-component">
-                <div id="employee-shifts" ng-show="showShifts">
-                    <header class="green-bg">
-                        <h2>Shifts for employee {{shiftEmployee}}</h2>
-                        <div><button class="close pull-right" ng-click="closeShifts()"></button></div>
-                    </header>
-                    <table class="table table-striped">
-                        <tr>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Start</th>
-                            <th>End</th>
-                            <th>Lunch Start</th>
-                            <th>Lunch End</th>
-                        </tr>
-                        <tr ng-repeat="s in shifts | orderBy: 'startTime'">
-                            <td>{{s.startTime | date : 'shortDate'}}</td>
-                            <td>{{s.shiftType}}</td>
-                            <td>{{s.startTime | date : 'hh:mma'}}</td>
-                            <td>{{s.endTime | date : 'hh:mma'}}</td>
-                            <td ng-placeHolder="--">{{s.lunchStartTime | date : 'hh:mma'}}</td>
-                            <td ng-placeHolder="--">{{s.lunchEndTime | date : 'hh:mma'}}</td>
-                        </tr>
-                    </table>
-                </div>
+            <section class="container  pull-left emp-main-component" id="employee-shifts" ng-show="showShifts">
+                <header class="section-top">
+                    <button class="btn btn-close pull-right" ng-click="closeShifts()"><span class="glyphicon glyphicon-remove"></span></button>
+                    <h2>Shifts for employee {{shiftEmployee}}</h2>
+                </header>
+                <table class="table">
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Lunch Start</th>
+                        <th>Lunch End</th>
+                    </tr>
+                    <tr ng-repeat="s in shifts | orderBy: 'startTime'">
+                        <td>{{s.startTime | date : 'shortDate'}}</td>
+                        <td>{{s.shiftType}}</td>
+                        <td>{{s.startTime | date : 'hh:mma'}}</td>
+                        <td>{{s.endTime | date : 'hh:mma'}}</td>
+                        <td ng-placeHolder="--">{{s.lunchStartTime | date : 'hh:mma'}}</td>
+                        <td ng-placeHolder="--">{{s.lunchEndTime | date : 'hh:mma'}}</td>
+                    </tr>
+                </table>
             </section>
-            <dialog ng-show="showCreate">
-                <form class="form-horizontal">
-                    <div class="error" ng-show="hasCreationError">{{creationErrorMessage}}</div>
-                    <div class="form-group">
-                        <label class="control-label">Date</label>
-                        <input type="text" ng-model="newShift.date"/>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Type</label>
-                        <select>
-                            <option ng-repeat="st in shiftTypes" value="{{st}}">{{st}}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">Start</label>
-                        <select>
-                            <option ng-repeat="t in times(9)" value="{{t}}">{{t | date : 'hh:mma' }}</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label">End</label>
-                        <select>
-                            <option ng-repeat="t in times(17)" value="{{t}}">{{t | date : 'hh:mma' }}</option>
-                        </select>
-                    </div>
-                    <div ng-show="newShift.type == 'Regular'">
-                        <div class="form-group">
-                            <label class="control-label">Lunch Start</label>
-                            <input type="text" ng-model="newShift.start"/>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Lunch End</label>
-                            <input type="text" ng-model="newShift.start"/>
-                        </div>
-                    </div>
 
+            <dialog ng-show="showCreate" class="modal">
+                <form class="form-horizontal">
+                    <div class="row">
+                        <div class="error" ng-show="creationError">{{creationErrorMessage}}</div>
+                        <div class="form-group">
+                            <label class="control-label">Date</label>
+                            <uib-datepicker ng-model="newShift.date" ng-change="shiftChange()" ng-required="true" year-range="2" show-weeks="true"></uib-datepicker>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Type</label>
+                            <select ng-model="newShift.shiftType" ng-change="shiftChange()">
+                                <option ng-selected="st == 'Regular'" ng-repeat="st in shiftTypes" value="{{st}}">{{st}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Start</label>
+                            <uib-timepicker ng-model="newShift.startTime" ng-change="shiftChange()" ng-required="true" minute-step="15"></uib-timepicker>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">End</label>
+                            <uib-timepicker ng-model="newShift.endTime" ng-change="shiftChange()" ng-required="true" minute-step="15"></uib-timepicker>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Lunch Taken?</label>
+                            <input type="checkbox" ng-model="newShift.hasLunch" ng-change="shiftChange()" />
+                        </div>
+                        <div ng-show="newShift.type == 'Regular'">
+                            <div class="form-group">
+                                <label class="control-label">Lunch Start</label>
+                                <uib-timepicker ng-model="newShift.lunchStartTime" ng-change="shiftChange()" minute-step="15"></uib-timepicker>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Lunch End</label>
+                                <uib-timepicker ng-model="newShift.lunchEndTime" ng-change="shiftChange()" minute-step="15"></uib-timepicker>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-default" ng-click="cancelCreate()">Cancel</button>
+                    <button class="btn btn-default" ng-show="!creationError" ng-click="postShift()">Save Shift</button>
                 </form>
             </dialog>
         </main>
         <footer>
-            <p>Timekeeper by dgagne: <time></time></p>
+            <p>Timekeeper by dgagne</p>
         </footer>
         <script src="/js/employee.js" th:ref="@{/js/shift.js}"></script>
     </body>

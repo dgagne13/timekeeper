@@ -9,32 +9,10 @@ table {
     border-spacing: 0;
 }
 
-/*
-color wheel
-blue-gray: #98A798
-dark gray: #263029
-silver: #BEC0BF
-forest: #307454
-dark forest: #0D3221
-rust: #864D1D
-.color-primary-0 { color: #277552 }	/* Main Primary color */
-/*
-.color-primary-1 { color: #75B095 }
-.color-primary-2 { color: #499371 }
-.color-primary-3 { color: #0F5837 }
-.color-primary-4 { color: #003B20 }
-.color-primary-5 { color: #D3D8D6 }
-
-.color-complement-0 { color: #AA5739 }	/* Main Complement color */
-/*
-.color-complement-1 { color: #FFC1AA }
-.color-complement-2 { color: #D4876A }
-.color-complement-3 { color: #803215 }
-.color-complement-4 { color: #551700 }
-*/
 body {
     font-family: Arial, Helvetica, sans-serif;
-    background: #C9F4E1;
+    background: #FFFFFF;
+    font-size: 9pt;
 }
 h1 {
     font-size: 5em;
@@ -48,22 +26,53 @@ h2 {
     border: 1px solid #061F14;
     margin-right: 1em;
 }
-.emp-main-component {
-    margin-top: 3em;
-    border-radius: 25px;
-}
-.dark-bg {
+.top-banner {
+    width: 100%;
     background: #061F14;
     color: #E1F3F7;
+    border-bottom: solid 2px #E1F3F7;
 }
-.green-bg {
-    background: #17744B;
-    color: #E1F3F7;
-}
-.light-green-bg {
+section.emp-main-component {
+    padding-left: 0;
+    padding-right: 0;
+    border: solid 0.3em #061F14;
+    border-radius: 8px;
     background: #C9F4E1;
     color: black;
 }
-.dark-border {
-    border: solid 0.3em #061F14;
+header.section-top {
+   background: #17744B;
+   vertical-align: middle;
+}
+.section-top  h2, .section-top label {
+    color: #E1F3F7;
+}
+#searchForm {
+    margin-left: 4%;
+}
+.emp-main-component th {
+    border-bottom: solid 2px #17744B;
+}
+.emp-main-component td {
+    background: #FFFFFF;
+    border-bottom: solid 1px #17744B;
+}
+footer {
+    background: #061F14;
+    position: fixed;
+    bottom: 0;
+    color: #E1F3F7;
+    text-align: center;
+    font-size: 8pt;
+    width: 100%;
+    height: 2em;
+}
+.btn-default {
+    background: #17744B;
+    color: #E1F3F7;
+}
+.btn-close {
+    background: red;
+    color: black;
+    border: solid 1px black;
 }
