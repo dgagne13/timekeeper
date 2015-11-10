@@ -16,6 +16,8 @@ app.controller('employees-ctrl', function($scope, $http) {
        $http.get(url)
            .success(function(response){ $scope.employees = response; });
 
+
+       $scope.view = 'employees';
     };
 
     /*view shifts */
@@ -30,7 +32,7 @@ app.controller('employees-ctrl', function($scope, $http) {
         $scope.view = "shifts";
     };
     $scope.closeShifts = function() {
-        $scope.view = "employees";
+        $scope.searchEmployees();
     };
 
     /* create a shift */
@@ -50,7 +52,7 @@ app.controller('employees-ctrl', function($scope, $http) {
 
     $scope.cancelCreate = function() {
         $scope.clearShift();
-        $scope.view = "employees";
+        $scope.searchEmployees();
     };
     $scope.clearShift = function() {
         $scope.newShift = {
@@ -152,7 +154,7 @@ app.controller('employees-ctrl', function($scope, $http) {
         var data = $scope.prepareData($scope.newShift);
         var url = "/v1/shifts";
         var response = $http.post(url,data);
-        response.success(function() { $scope.view = 'employees';});
+        response.success(function() { $scope.searchEmployees();});
         response.error(function(err) {
             $scope.creationError = true;
             $scope.creationErrorMessage = err.message;
