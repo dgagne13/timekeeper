@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class ShiftDTO {
+    private Long shiftId;
     private Long employeeId;
-
     private Date startTime;
     private Date endTime;
     private Date lunchStartTime;
@@ -17,13 +17,22 @@ public class ShiftDTO {
 
     public ShiftDTO() {};
     public ShiftDTO(Shift shift) {
+        this.shiftId = shift.getId();
         this.employeeId = shift.getEmployeeId();
-        this.shiftType = shift.getShiftType().name();
+        this.shiftType = shift.getShiftType().getValue();
         this.startTime = shift.getStartTime();
         this.lunchStartTime = shift.getLunchStartTime();
         this.lunchEndTime = shift.getLunchStartTime();
         this.endTime = shift.getEndTime();
         this.duration = shift.getDuration();
+    }
+
+    public Long getShiftId() {
+        return shiftId;
+    }
+
+    public void setShiftId(Long shiftId) {
+        this.shiftId = shiftId;
     }
 
     public Long getEmployeeId() {

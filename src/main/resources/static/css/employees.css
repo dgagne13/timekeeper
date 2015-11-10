@@ -47,8 +47,14 @@ header.section-top {
 .section-top  h2, .section-top label {
     color: #E1F3F7;
 }
-#searchForm {
+form {
     margin-left: 4%;
+}
+.emp-main-component label {
+    font-size 11pt;
+}
+.emp-main-component input {
+   margin-right: 1em;
 }
 .emp-main-component th {
     border-bottom: solid 2px #17744B;
@@ -75,4 +81,10 @@ footer {
     background: red;
     color: black;
     border: solid 1px black;
+}
+.error {
+    font: 30pt;
+    font-weight: 500;
+    color: red;
+    line-height:1.5em
 }

@@ -8,6 +8,7 @@ import net.chronos.timekeeper.dto.ShiftDTO;
 import net.chronos.timekeeper.exception.NotFoundException;
 import net.chronos.timekeeper.exception.ShiftCreationException;
 import net.chronos.timekeeper.repository.ShiftRepository;
+import net.chronos.timekeeper.repository.ShiftTypeRepository;
 import net.chronos.timekeeper.util.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,9 @@ public class ShiftServiceImplTest {
     ShiftRepository shiftRepository;
 
     @Mock
+    ShiftTypeRepository shiftTypeRepository;
+
+    @Mock
     EmployeeService employeeService;
 
     EmployeeDTO employee;
@@ -58,6 +62,16 @@ public class ShiftServiceImplTest {
 
         when(employeeService.getEmployee(1L)).thenReturn(employee);
         when(shiftRepository.findByEmployeeIdAndStartTimeBeforeAndEndTimeAfter(anyLong(), any(Date.class), any(Date.class))).thenReturn(Collections.EMPTY_LIST);
+
+        ShiftType regular = new ShiftType();
+        regular.setValue("Regular");
+
+        when(shiftTypeRepository.findByValue("Regular")).thenReturn(regular);
+
+        ShiftType vacation = new ShiftType();
+        vacation.setValue("Vacation");
+
+        when(shiftTypeRepository.findByValue("Vacation")).thenReturn(vacation);
     }
 
     @Test(expected = ShiftCreationException.class)
@@ -214,7 +228,7 @@ public class ShiftServiceImplTest {
         assertEquals(DateUtil.from("2015-01-01T17:00:00.000Z"), shift.getEndTime());
         assertEquals(DateUtil.from("2015-01-01T12:00:00.000Z"), shift.getLunchStartTime());
         assertEquals(DateUtil.from("2015-01-01T12:30:00.000Z"), shift.getLunchEndTime());
-        assertEquals(ShiftType.Regular, shift.getShiftType());
+        assertEquals("Regular", shift.getShiftType().getValue());
     }
     @Test
     public void shouldSaveShiftWithExpectedDuration() throws Exception{

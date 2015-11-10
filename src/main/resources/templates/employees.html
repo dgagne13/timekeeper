@@ -11,17 +11,20 @@
         <link rel="stylesheet" href="/css/employees.css" th:href="@{/css/employees.css}"/>
         <!-- for angular and some handy ui components on top of angular and bootstrap -->
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.min.js"></script>
+
     </head>
     <body>
-        <main ng-app="employees-app" ng-controller="employees-ctrl" ng-init="@{/}">
+        <main ng-app="employees-app" ng-controller="employees-ctrl" >
+
             <header class="top-banner">
                 <h1><img src="/images/clock-26095_640.png" width="120px" class="logo"/>Timekeeper</h1>
             </header>
-            <section class="container pull-left emp-main-component" id="employees" ng-show="showEmployees">
+            <section class="container pull-left emp-main-component" id="employees" ng-show="view == 'employees'">
                 <header class="section-top">
                     <h2>Employees</h2>
-                    <form class="form-horizontal" id="searchForm">
+                    <form class="form-horizontal">
                         <div class="row">
                             <div class="form-group col-sm-4">
                                 <label class="control-label">Last Name</label>
@@ -31,7 +34,7 @@
                                 <label class="control-label">Department</label>
                                 <select ng-model="empSearchDept">
                                     <option value="" selected="selected">All</option>
-                                    <option th:each="department : ${departments}" th:value="${department.name}" th:text="${department.name}">----</option>
+                                    <option th:each="department : ${departments}" th:value="${department.name}" th:text="${department.name}">---</option>
                                 </select>
                             </div>
                             <button class="btn btn-default" ng-click="searchEmployees()"><span class="glyphicon glyphicon-search"></span>&nbsp;Search</button>
@@ -53,7 +56,7 @@
                         <th>Hired</th>
                     </tr>
                     <tr ng-repeat="e in employees | orderBy: 'lastName'">
-                        <td><button class="btn btn-default" ng-show="e.employmentStatus == 'Active'" ng-click="createShift(e.id)"><span class="glyphicon glyphicon-time"></span></button></td>
+                        <td><button class="btn btn-default" ng-show="e.employmentStatus == 'Active'" ng-click="createShift(e.id, e.firstName + ' ' + e.lastName)"><span class="glyphicon glyphicon-time"></span></button></td>
                         <td>{{e.lastName}}</td>
                         <td>{{e.firstName}}</td>
                         <td>{{e.position}}</td>
@@ -67,10 +70,10 @@
                     </tr>
                 </table>
             </section>
-            <section class="container  pull-left emp-main-component" id="employee-shifts" ng-show="showShifts">
+            <section class="container  pull-left emp-main-component" id="employee-shifts" ng-show="view == 'shifts'">
                 <header class="section-top">
                     <button class="btn btn-close pull-right" ng-click="closeShifts()"><span class="glyphicon glyphicon-remove"></span></button>
-                    <h2>Shifts for employee {{shiftEmployee}}</h2>
+                    <h2>Shift history for {{shiftEmployee}}</h2>
                 </header>
                 <table class="table">
                     <tr>
@@ -80,63 +83,83 @@
                         <th>End</th>
                         <th>Lunch Start</th>
                         <th>Lunch End</th>
+                        <th></th>
                     </tr>
                     <tr ng-repeat="s in shifts | orderBy: 'startTime'">
                         <td>{{s.startTime | date : 'shortDate'}}</td>
                         <td>{{s.shiftType}}</td>
                         <td>{{s.startTime | date : 'hh:mma'}}</td>
                         <td>{{s.endTime | date : 'hh:mma'}}</td>
-                        <td ng-placeHolder="--">{{s.lunchStartTime | date : 'hh:mma'}}</td>
-                        <td ng-placeHolder="--">{{s.lunchEndTime | date : 'hh:mma'}}</td>
+                        <td>{{(s.lunchStartTime | date : 'hh:mma') || '---'}}</td>
+                        <td>{{(s.lunchEndTime | date : 'hh:mma') || '---'}}</td>
+                        <td><button class="btn" ng-click="deleteShift(s.shiftId)"><span class="glyphicon glyphicon-remove"></span></button></td>
                     </tr>
                 </table>
             </section>
 
-            <dialog ng-show="showCreate" class="modal">
+            <section ng-show="view == 'create'" class="container pull-left emp-main-component">
+                <header class="section-top">
+                    <button class="btn btn-close pull-right" ng-click="cancelCreate()"><span class="glyphicon glyphicon-remove"></span></button>
+                    <h2>Enter shift for {{shiftEmployee}}</h2>
+                </header>
                 <form class="form-horizontal">
                     <div class="row">
-                        <div class="error" ng-show="creationError">{{creationErrorMessage}}</div>
-                        <div class="form-group">
-                            <label class="control-label">Date</label>
-                            <uib-datepicker ng-model="newShift.date" ng-change="shiftChange()" ng-required="true" year-range="2" show-weeks="true"></uib-datepicker>
-                        </div>
-                        <div class="form-group">
+                        <div class="col-sm-3">
                             <label class="control-label">Type</label>
-                            <select ng-model="newShift.shiftType" ng-change="shiftChange()">
+                            <select ng-model="newShift.shiftType" ng-change="shiftChange()" class="form-control">
                                 <option ng-selected="st == 'Regular'" ng-repeat="st in shiftTypes" value="{{st}}">{{st}}</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="col-sm-4">
+                            <label class="control-label">Date</label>
+                            <uib-datepicker ng-model="newShift.date" ng-change="shiftChange()" ng-required="true" year-range="2" show-weeks="true" max-date="currentDate"></uib-datepicker>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3"><label>Shift Times</label></div>
+                        <div class="col-sm-3">
                             <label class="control-label">Start</label>
                             <uib-timepicker ng-model="newShift.startTime" ng-change="shiftChange()" ng-required="true" minute-step="15"></uib-timepicker>
                         </div>
-                        <div class="form-group">
+                        <div class="col-sm-3">
                             <label class="control-label">End</label>
                             <uib-timepicker ng-model="newShift.endTime" ng-change="shiftChange()" ng-required="true" minute-step="15"></uib-timepicker>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label">Lunch Taken?</label>
-                            <input type="checkbox" ng-model="newShift.hasLunch" ng-change="shiftChange()" />
-                        </div>
-                        <div ng-show="newShift.type == 'Regular'">
-                            <div class="form-group">
+                    </div>
+                    <div class="row">
+                        <div ng-show="newShift.shiftType == 'Regular'">
+                            <div class="col-sm-3">
+                                <label class="control-label">Lunch Taken?</label>
+                                <input type="checkbox" ng-model="newShift.hasLunch" ng-change="shiftChange()"/>
+                            </div>
+                            <div class="col-sm-3" ng-show="newShift.hasLunch">
                                 <label class="control-label">Lunch Start</label>
                                 <uib-timepicker ng-model="newShift.lunchStartTime" ng-change="shiftChange()" minute-step="15"></uib-timepicker>
                             </div>
-                            <div class="form-group">
+                            <div class="col-sm-3" ng-show="newShift.hasLunch">
                                 <label class="control-label">Lunch End</label>
                                 <uib-timepicker ng-model="newShift.lunchEndTime" ng-change="shiftChange()" minute-step="15"></uib-timepicker>
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-default" ng-click="cancelCreate()">Cancel</button>
-                    <button class="btn btn-default" ng-show="!creationError" ng-click="postShift()">Save Shift</button>
+                    <div class="row">
+                        <div class="col-sm-12"><span class="error" ng-show="creationError">{{creationErrorMessage}}</span> </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <button class="btn btn-default" ng-click="cancelCreate()">Cancel</button>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="btn btn-default" ng-show="!creationError" ng-click="postShift()">Save Shift</button>
+                        </div>
+                    </div>
+
                 </form>
-            </dialog>
+            </section>
         </main>
         <footer>
             <p>Timekeeper by dgagne</p>
         </footer>
-        <script src="/js/employee.js" th:ref="@{/js/shift.js}"></script>
+        <script src="/js/employee.js" th:ref="@{/js/employee.js}"></script>
     </body>
 </html>

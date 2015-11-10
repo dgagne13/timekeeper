@@ -8,6 +8,7 @@ import net.chronos.timekeeper.dto.ShiftDTO;
 import net.chronos.timekeeper.exception.NotFoundException;
 import net.chronos.timekeeper.exception.ShiftCreationException;
 import net.chronos.timekeeper.repository.ShiftRepository;
+import net.chronos.timekeeper.repository.ShiftTypeRepository;
 import net.chronos.timekeeper.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,9 @@ public class ShiftServiceImpl implements ShiftService {
     private ShiftRepository shiftRepository;
 
     @Autowired
+    private ShiftTypeRepository shiftTypeRepository;
+
+    @Autowired
     private EmployeeService employeeService;
 
     public Long createShift(ShiftDTO shiftDTO) throws ShiftCreationException {
@@ -79,17 +83,15 @@ public class ShiftServiceImpl implements ShiftService {
     public void deleteShift(Long shiftId) throws NotFoundException {
         Shift shift = getShiftById(shiftId);
         EmployeeDTO employee = employeeService.getEmployee(shift.getEmployeeId());
-        switch (shift.getShiftType()) {
-           case Vacation:
-               //put back vacation time
-               BigDecimal adjustedVacation = employee.getVacationHours().add(shift.getDuration());
-               employeeService.updateEmployeeVacation(employee.getId(), adjustedVacation);
-               break;
-            case Sick:
-                //put back vacation time
-                BigDecimal adjustedSick = employee.getSickHours().add(shift.getDuration());
-                employeeService.updateEmployeeSick(employee.getId(), adjustedSick);
-                break;
+        if(shift.getShiftType().getValue().equals("Vacation") ) {
+            //put back vacation time
+            BigDecimal adjustedVacation = employee.getVacationHours().add(shift.getDuration());
+            employeeService.updateEmployeeVacation(employee.getId(), adjustedVacation);
+        } else if(shift.getShiftType().getValue().equals("Sick") ) {
+            //put back vacation time
+            BigDecimal adjustedSick = employee.getSickHours().add(shift.getDuration());
+            employeeService.updateEmployeeSick(employee.getId(), adjustedSick);
+
         }
        shiftRepository.delete(shift);
     }
@@ -117,24 +119,19 @@ public class ShiftServiceImpl implements ShiftService {
         vaidateNoOverlappingShifts(shiftDTO);
 
         BigDecimal shiftDuration = getFullShiftDuration(shiftDTO);
-        ShiftType shiftType = ShiftType.valueOf(shiftDTO.getShiftType());
+        ShiftType shiftType = shiftTypeRepository.findByValue(shiftDTO.getShiftType());
 
-        //additional validation based on type
-        switch(shiftType) {
-            case Regular:
-                validateLunchPesentIfRequired(shiftDTO, shiftDuration);
-                validateLunchValidIfPresent(shiftDTO);
-                break;
-            case Vacation:
-                validateHasNoLunch(shiftDTO);
-                validateHasEnoughVacationTime(shiftDuration,employee);
-                break;
-            case Sick:
-                validateHasNoLunch(shiftDTO);
-                validateHasEnoughSickTime(shiftDuration, employee);
-                break;
-            default:
-                validateHasNoLunch(shiftDTO);
+        if(shiftType.getValue().equals("Regular")) {
+            validateLunchPesentIfRequired(shiftDTO, shiftDuration);
+            validateLunchValidIfPresent(shiftDTO);
+        } else if(shiftType.getValue().equals("Vacation")) {
+            validateHasNoLunch(shiftDTO);
+            validateHasEnoughVacationTime(shiftDuration,employee);
+        } else if(shiftType.getValue().equals("Sick")) {
+            validateHasNoLunch(shiftDTO);
+            validateHasEnoughSickTime(shiftDuration, employee);
+        } else {
+            validateHasNoLunch(shiftDTO);
         }
     }
     private void validateEmployeeExistsAndIsActive(EmployeeDTO employee) throws ShiftCreationException {
@@ -234,7 +231,7 @@ public class ShiftServiceImpl implements ShiftService {
         String requestShiftType = shiftDTO.getShiftType();
         if (requestShiftType != null) {
             try {
-                shiftType = ShiftType.valueOf(requestShiftType);
+                shiftType = shiftTypeRepository.findByValue(requestShiftType);
             } catch (IllegalArgumentException iee) {
                 log.info(NO_SHIFT_TYPE, requestShiftType, shiftDTO.getEmployeeId());
                 throw new ShiftCreationException("Could not create shift of type " + requestShiftType);
@@ -256,7 +253,7 @@ public class ShiftServiceImpl implements ShiftService {
 
     private void copyShiftDTOToShift(Shift shift, ShiftDTO shiftDTO) {
         shift.setEmployeeId(shiftDTO.getEmployeeId());
-        shift.setShiftType(ShiftType.valueOf(shiftDTO.getShiftType()));
+        shift.setShiftType(shiftTypeRepository.findByValue(shiftDTO.getShiftType()));
         shift.setStartTime(shiftDTO.getStartTime());
         shift.setLunchStartTime(shiftDTO.getLunchStartTime());
         shift.setLunchEndTime(shiftDTO.getLunchEndTime());
@@ -287,10 +284,10 @@ public class ShiftServiceImpl implements ShiftService {
     private void adjustEmployeeHours(ShiftDTO shiftDTO, EmployeeDTO employeeDTO) throws NotFoundException {
         BigDecimal duration = getFullShiftDuration(shiftDTO);
 
-        if(ShiftType.Vacation.equals(shiftDTO.getShiftType())) {
+        if("Vacation".equals(shiftDTO.getShiftType())) {
             BigDecimal currentVacation = employeeDTO.getVacationHours();
             employeeService.updateEmployeeVacation(shiftDTO.getEmployeeId(), currentVacation.subtract(duration));
-        } else if (ShiftType.Sick.equals(shiftDTO.getShiftType())) {
+        } else if ("Sick".equals(shiftDTO.getShiftType())) {
             BigDecimal currentSick = employeeDTO.getSickHours();
             employeeService.updateEmployeeSick(shiftDTO.getEmployeeId(), currentSick.subtract(duration));
         }

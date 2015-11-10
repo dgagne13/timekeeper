@@ -56,7 +56,7 @@ public class ShiftsController {
 
     }
 
-    @ExceptionHandler({NotFoundException.class})
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleNotFound(HttpServletRequest request, NotFoundException e) {
         Map<String,Object> error = new HashMap<>();
@@ -65,12 +65,12 @@ public class ShiftsController {
         return error;
     }
 
-    @ExceptionHandler({ShiftCreationException.class})
+    @ExceptionHandler(ShiftCreationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public Map<String, Object> handleShiftException(HttpServletRequest request, NotFoundException e) {
+    public Map<String, Object> handleShiftException(HttpServletRequest request, ShiftCreationException e) {
         Map<String,Object> error = new HashMap<>();
-        error.put("status", HttpStatus.NOT_FOUND);
+        error.put("status", HttpStatus.BAD_REQUEST);
         error.put("message", e.getMessage());
         return error;
     }

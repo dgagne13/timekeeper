@@ -1,15 +1,14 @@
 var app = angular.module('employees-app', ['ui.bootstrap']);
 app.controller('employees-ctrl', function($scope, $http) {
-    $scope.baseUrl = ""; //"http://localhost:8080";
-    $http.get($scope.baseUrl + "/v1/employees")
+    $scope.view = "employees";
+    $http.get("/v1/employees")
     .success(function(response){ $scope.employees = response });
-    $scope.showShifts = false;
-    $scope.showEmployees = true;
+
     /* search employees */
     $scope.empSearchLast = "";
     $scope.empSearchDept = "";
     $scope.searchEmployees = function() {
-        var url = $scope.baseUrl + "/v1/employees?last=" + $scope.empSearchLast;
+        var url = "/v1/employees?last=" + $scope.empSearchLast;
         if($scope.empSearchDept){
             url += "&department=" + $scope.empSearchDept;
         }
@@ -21,22 +20,22 @@ app.controller('employees-ctrl', function($scope, $http) {
 
     /*view shifts */
     $scope.shiftsForEmployee = function(id, name) {
-        var url = $scope.baseUrl + "/v1/shifts?employee-id=" + id;
+        var url = "/v1/shifts?employee-id=" + id;
          $http.get(url)
                    .success(function(response){
                         $scope.shifts = response;
                         $scope.shiftEmployee = name;
+                        $scope.shiftEmployeeId = id;
                     });
-        $scope.showEmployees = false;
-        $scope.showShifts = true;
+        $scope.view = "shifts";
     };
     $scope.closeShifts = function() {
-        $scope.showShifts = false;
-        $scope.showEmployees = true;
+        $scope.view = "employees";
     };
 
     /* create a shift */
     $scope.shiftTypes = ['Regular', 'Vacation', 'Sick', 'Holiday', 'UnpaidLeave'];
+    $scope.currentDate = new Date();
     $scope.showCreate = false;
     $scope.hasCreationError = false;
     $scope.creationErrorMessage = false;
@@ -48,9 +47,10 @@ app.controller('employees-ctrl', function($scope, $http) {
         dwh.setMilliseconds(0);
         return dwh;
     };
+
     $scope.cancelCreate = function() {
         $scope.clearShift();
-        $scope.showCreate = false;
+        $scope.view = "employees";
     };
     $scope.clearShift = function() {
         $scope.newShift = {
@@ -59,10 +59,11 @@ app.controller('employees-ctrl', function($scope, $http) {
             shiftType: 'Regular',
             startTime: $scope.dateWithHours(9,0),
             endTime: $scope.dateWithHours(17,0),
-            hasLunch: false,
-            lunchStart: $scope.dateWithHours(12,0),
-            lunchEnd: $scope.dateWithHours(12,30)
+            hasLunch: true,
+            lunchStartTime: $scope.dateWithHours(12,0),
+            lunchEndTime: $scope.dateWithHours(12,30)
         }
+        $scope.shiftEmployee = "";
         $scope.creationError = false;
         $scope.creationErrorMessage = "";
     };
@@ -70,24 +71,24 @@ app.controller('employees-ctrl', function($scope, $http) {
         var ns = $scope.newShift;
 
         //set date for time fields
-        ns.startTime.setYear(ns.date.getFullYear());
+        ns.startTime.setFullYear(ns.date.getFullYear());
         ns.startTime.setMonth(ns.date.getMonth());
-        ns.startTime.setDay(ns.date.getDate());
+        ns.startTime.setDate(ns.date.getDate());
 
         //set date for time fields
-        ns.endTime.setYear(ns.date.getFullYear());
+        ns.endTime.setFullYear(ns.date.getFullYear());
         ns.endTime.setMonth(ns.date.getMonth());
-        ns.endTime.setDay(ns.date.getDate());
+        ns.endTime.setDate(ns.date.getDate());
 
         //set date for time fields
-        ns.lunchStartTime.setYear(ns.date.getFullYear());
+        ns.lunchStartTime.setFullYear(ns.date.getFullYear());
         ns.lunchStartTime.setMonth(ns.date.getMonth());
-        ns.lunchStartTime.setDay(ns.date.getDate());
+        ns.lunchStartTime.setDate(ns.date.getDate());
 
         //set date for time fields
-        ns.lunchEndTime.setYear(ns.date.getFullYear());
+        ns.lunchEndTime.setFullYear(ns.date.getFullYear());
         ns.lunchEndTime.setMonth(ns.date.getMonth());
-        ns.lunchEndTime.setDay(ns.date.getDate());
+        ns.lunchEndTime.setDate(ns.date.getDate());
 
         if(ns.startTime.getTime() >= ns.endTime.getTime()) {
             $scope.creationError = true;
@@ -98,7 +99,7 @@ app.controller('employees-ctrl', function($scope, $http) {
         if(ns.shiftType === 'Regular') {
            if(ns.hasLunch) {
                 // make sure times are sequential
-               if(ns.startTime.getTime() >= ns.endTime.getTime()) {
+               if(ns.lunchStartTime.getTime() >= ns.lunchEndTime.getTime()) {
                    $scope.creationError = true;
                    $scope.creationErrorMessage = "Lunch must end after it begins";
                    return;
@@ -123,22 +124,25 @@ app.controller('employees-ctrl', function($scope, $http) {
     };
 
     //set up new shift with emp id
-    $scope.createShift = function(employeeId) {
+    $scope.createShift = function(employeeId, name) {
        $scope.clearShift();
+       $scope.shiftEmployee = name;
        $scope.newShift.employeeId = employeeId;
+       $scope.view = "create"
     };
 
     //prepare shift data for posting
     $scope.prepareData = function(newShift) {
         var data = {};
         var ns = $scope.newShift;
+        data.employeeId = ns.employeeId;
         data.shiftType = ns.shiftType;
         data.startTime = ns.startTime;
         data.endTime = ns.endTime;
 
-        if(ns.hasLunch) {
-           data.lunchStartTime = ns.startTime;
-           data.lunchEndTime = ns.endTime;
+        if(ns.shiftType == 'Regular' && ns.hasLunch) {
+           data.lunchStartTime = ns.lunchStartTime;
+           data.lunchEndTime = ns.lunchEndTime;
         }
 
         return JSON.stringify(data);
@@ -146,12 +150,23 @@ app.controller('employees-ctrl', function($scope, $http) {
 
     $scope.postShift = function() {
         var data = $scope.prepareData($scope.newShift);
-        var url = $scope.baseUrl + "/v1/shifts";
+        var url = "/v1/shifts";
         var response = $http.post(url,data);
-        res.success(function() { $scope.showCreate = false;});
-        res.error(function(err) {
+        response.success(function() { $scope.view = 'employees';});
+        response.error(function(err) {
             $scope.creationError = true;
             $scope.creationErrorMessage = err.message;
         });
     };
+
+    $scope.deleteShift = function(shiftId) {
+        var url = "/v1/shifts/" + shiftId;
+        var response = $http.delete(url);
+        response.success(function() {
+            $scope.shiftsForEmployee($scope.shiftEmployeeId, $scope.shiftEmployee);
+        });
+        response.error(function(err) {
+            alert("Error deleting shift: " + err.message);
+        });
+    }
 });

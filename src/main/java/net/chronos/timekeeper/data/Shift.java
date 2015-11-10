@@ -33,8 +33,8 @@ public class Shift {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lunchEndTime;
 
-    @Column(name = "shift_type_id", nullable = false)
-    @Enumerated(EnumType.ORDINAL)
+    @ManyToOne
+    @JoinColumn(name = "shift_type_id", nullable = false)
     private ShiftType shiftType;
 
     public Long getId() {
