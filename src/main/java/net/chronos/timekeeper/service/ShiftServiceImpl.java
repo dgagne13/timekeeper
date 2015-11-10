@@ -213,14 +213,14 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     private void validateHasEnoughVacationTime(BigDecimal shiftDuration, EmployeeDTO employee) throws ShiftCreationException{
-        if(shiftDuration.compareTo(employee.getVacationHours()) <= 0) {
+        if(shiftDuration.compareTo(employee.getVacationHours()) >= 0) {
             log.info(INSUFFICIENT_VACATION + " Employee " + employee.getLastName());
             throw new ShiftCreationException(INSUFFICIENT_VACATION);
         }
     }
 
     private void validateHasEnoughSickTime(BigDecimal shiftDuration, EmployeeDTO employee) throws ShiftCreationException {
-        if(shiftDuration.compareTo(employee.getSickHours()) <= 0) {
+        if(shiftDuration.compareTo(employee.getSickHours()) >= 0) {
             log.info(INSUFFICIENT_SICK + " Employee " + employee.getLastName());
             throw new ShiftCreationException(INSUFFICIENT_SICK);
         }
