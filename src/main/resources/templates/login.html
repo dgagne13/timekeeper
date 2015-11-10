@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/login.css" th:href="@{/css/login.css}"/>
+    <title>Welcome to chronos - login</title>
+</head>
+<body>
+<header class="top-banner">
+    <h1><img src="/images/clock-26095_640.png" width="120px" class="logo"/>Timekeeper</h1>
+</header>
+<section class="container pull-left loginbox">
+    <div class="error" th:if="${param.error}">User name or password was invalid</div>
+    <form class="form" th:action="@{/login}" method="post">
+        <div><label class="control-label">User name: <input type="text" name="username"/></label></div>
+        <div><label class="control-label">Password: <input type="password" name="password"/></label></div>
+        <div><input class="btn btn-default" type="submit" value="Log in"/></div>
+    </form>
+</section>
+</body>
+</html>

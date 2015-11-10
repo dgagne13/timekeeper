@@ -20,6 +20,11 @@
 
             <header class="top-banner">
                 <h1><img src="/images/clock-26095_640.png" width="120px" class="logo"/>Timekeeper</h1>
+                <div class="logout">
+                    <form th:action="@{/logout}" method="post">
+                        <input type="submit" value="Log out"/>
+                    </form>
+                </div>
             </header>
             <section class="container pull-left emp-main-component" id="employees" ng-show="view == 'employees'">
                 <header class="section-top">
